@@ -1,0 +1,35 @@
+---
+description: "This rule governs the creation and maintenance of development notes for the ng-docmost project. It should be applied whenever: (1) The user completes a task, (2) The user mentions implementing a new feature, (3) The user fixes a bug or resolves an issue, (4) Any significant code change is made. This rule ensures consistent documentation of development work, including implementation details, challenges, solutions, and important notes, which will be used for future blog posts and reference."
+globs: 
+alwaysApply: false
+---
+
+# Development Notes Documentation
+
+## Critical Rules
+
+- When a task or feature implementation is completed, generate a development note in the `development-notes` folder
+- Name files in kebab-case using descriptive task names (e.g., `material-theming-setup.md`, `authentication-implementation.md`)
+- Use the date of completion as the first section, formatted as YYYY-MM-DD
+- Include all mandatory sections: Overview, Implementation Details, Technical Decisions, Challenges, Solutions, Important Notes
+- Document Angular and TypeScript implementation details with specific attention to:
+  - Component architecture decisions
+  - Service implementations
+  - State management approaches
+  - Performance considerations
+  - TypeScript types and interfaces created
+- Capture any challenges encountered, particularly with Angular features, TypeScript typing, or third-party libraries
+- Document all important technical decisions with brief explanations of alternatives considered
+- Include relevant code snippets for complex implementations, wrapped in appropriate markdown code blocks
+- Add links to any documentation, articles, or resources that were helpful
+- Suggest future improvements related to the implemented task
+
+## Examples
+
+<example>
+User: "I've just finished implementing the authentication service using Angular's HttpClient and JWT."
+</example>
+
+<example type="invalid">
+Invalid example
+</example> 

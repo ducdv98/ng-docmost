@@ -1,1 +1,25 @@
-/* You can add global styles to this file, and also import other style files */
+@use "app/styles/vendor/tailwind";
+@use "app/styles/theme/_theme-colors" as theme;
+@use "@angular/material" as mat;
+@use "app/styles/components";
+@use "app/styles/layouts";
+
+:root {
+  color-scheme: light dark;
+}
+
+html {
+  @include mat.theme(
+    (
+      color: theme.$primary-palette,
+      typography: Roboto,
+      density: 0,
+    )
+  );
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
