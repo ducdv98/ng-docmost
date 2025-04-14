@@ -1,0 +1,129 @@
+---
+description: This rule governs the use of Angular signals instead of RxJS observables across the application. It should be applied whenever: (1) Creating new components, services, or stores, (2) Refactoring existing code that uses observables, (3) Implementing state management, (4) Handling reactive UI updates, or (5) Discussing data flow patterns. The rule ensures consistent usage of Angular's built-in reactivity system, reduced complexity, and improved performance. This approach aligns with Angular's modern development patterns while reducing RxJS complexity and potential memory leaks.
+globs: 
+alwaysApply: false
+---
+
+# Angular Signals Preference
+
+## Critical Rules
+
+- Use Angular's signals API instead of RxJS observables for reactive state management whenever possible
+- Implement state with `signal()`, `computed()`, and effect()` functions from @angular/core
+- Create readonly signals using `signal.asReadonly()` when exposing state to consumers
+- Use `computed()` for derived state that depends on other signals
+- Use `effect()` for side effects that should run when signals change
+- Migrate existing observables to signals when refactoring code
+- Only use RxJS when dealing with truly asynchronous events that signals cannot handle (HTTP requests, WebSockets)
+- For HTTP requests, convert the observable to a signal using `toSignal()` from @angular/core/rxjs-interop
+- Avoid mixing signals and observables in the same component or service when possible
+- Structure component state using signals for improved change detection performance
+- Use `untracked()` when reading signal values without creating dependencies
+- When accepting inputs in components, prefer signal inputs over traditional @Input() properties
+
+## Examples
+
+<example>
+// Good: Using signals for component state
+import { Component, signal, computed } from '@angular/core';
+
+@Component({
+  selector: 'app-counter',
+  template: `
+    <p>Count: {{ count() }}</p>
+    <p>Doubled: {{ doubledCount() }}</p>
+    <button (click)="increment()">Increment</button>
+  `,
+  standalone: true
+})
+export class CounterComponent {
+  // Create a signal with initial value
+  public count = signal(0);
+  
+  // Computed value derived from a signal
+  public doubledCount = computed(() => this.count() * 2);
+  
+  public increment(): void {
+    // Update the signal with a new value
+    this.count.update(value => value + 1);
+  }
+}
+
+// Good: Signal-based service
+import { Injectable, signal, computed } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { HttpClient } from '@angular/common/http';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class UserService {
+  private userSignal = signal<User | null>(null);
+  public user = this.userSignal.asReadonly();
+  public isLoggedIn = computed(() => !!this.userSignal());
+  
+  constructor(private http: HttpClient) {}
+  
+  loadUser(id: string): void {
+    // Convert HTTP observable to signal
+    const userResponse = toSignal(
+      this.http.get<User>(`/api/users/${id}`)
+    );
+    
+    // Update the user signal when the HTTP request completes
+    if (userResponse()) {
+      this.userSignal.set(userResponse()!);
+    }
+  }
+}
+</example>
+
+<example type="invalid">
+// Bad: Using observables for local component state
+import { Component } from '@angular/core';
+import { BehaviorSubject, Observable, map } from 'rxjs';
+
+@Component({
+  selector: 'app-counter',
+  template: `
+    <p>Count: {{ count$ | async }}</p>
+    <p>Doubled: {{ doubledCount$ | async }}</p>
+    <button (click)="increment()">Increment</button>
+  `,
+})
+export class CounterComponent implements OnDestroy {
+  private countSubject = new BehaviorSubject<number>(0);
+  public count$ = this.countSubject.asObservable();
+  public doubledCount$ = this.count$.pipe(map(count => count * 2));
+  
+  public increment(): void {
+    this.countSubject.next(this.countSubject.value + 1);
+  }
+  
+  ngOnDestroy(): void {
+    // Need manual cleanup
+    this.countSubject.complete();
+  }
+}
+
+// Bad: Over-using RxJS for simple state management
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable, map } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class UserService {
+  private userSubject = new BehaviorSubject<User | null>(null);
+  public user$ = this.userSubject.asObservable();
+  public isLoggedIn$ = this.user$.pipe(map(user => !!user));
+  
+  setUser(user: User): void {
+    this.userSubject.next(user);
+  }
+  
+  clearUser(): void {
+    this.userSubject.next(null);
+  }
+}
+</example> 

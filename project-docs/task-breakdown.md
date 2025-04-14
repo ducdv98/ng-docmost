@@ -16,7 +16,7 @@
     * **Dependencies:** None
     * **Complexity:** Medium (Initial setup of both libraries)
 
-2.  **Task:** **Setup Core Application Routing**
+2.  **Task:** **Setup Core Application Routing** [100% Complete]
     * **PRD Ref:** `FE-LAYOUT-*`, `FE-AUTH-*`
     * **Description:** Define the main application routes (e.g., `/login`, `/signup`, `/app` (for authenticated layout), `/app/dashboard`, `/app/page/:id`, `/app/settings`). Implement basic route structure and lazy loading for feature modules/routes where appropriate.
     * **API Endpoint(s):** `N/A`
