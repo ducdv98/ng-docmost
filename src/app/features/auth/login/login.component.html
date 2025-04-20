@@ -1,40 +1,8 @@
 <div class="flex items-center justify-center min-h-screen bg-gray-50">
   <div class="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
-    <h1 class="mb-6 text-2xl font-semibold text-center text-gray-900">
-      Create workspace
-    </h1>
+    <h1 class="mb-6 text-2xl font-semibold text-center text-gray-900">Login</h1>
 
-    <form [formGroup]="workspaceForm" (ngSubmit)="onSubmit()">
-      <div class="mb-4">
-        <label
-          htmlFor="email"
-          class="block mb-2 text-sm font-medium text-gray-700"
-        >
-          Workspace name
-        </label>
-        <input
-          formControlName="workspaceName"
-          type="text"
-          id="workspaceName"
-          class="auth-input"
-          placeholder="My workspace"
-        />
-      </div>
-      <div class="mb-4">
-        <label
-          htmlFor="email"
-          class="block mb-2 text-sm font-medium text-gray-700"
-        >
-          Your name
-        </label>
-        <input
-          formControlName="name"
-          type="text"
-          id="name"
-          class="auth-input"
-          placeholder="Your name"
-        />
-      </div>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <div class="mb-4">
         <label
           htmlFor="email"
@@ -85,11 +53,17 @@
         </div>
       </div>
 
+      <div class="flex justify-end mb-6">
+        <a href="#" class="text-sm text-blue-600 hover:underline">
+          Forgot your password?
+        </a>
+      </div>
+
       <button
         type="submit"
         class="w-full py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
       >
-        Create workspace
+        Sign In
       </button>
     </form>
   </div>

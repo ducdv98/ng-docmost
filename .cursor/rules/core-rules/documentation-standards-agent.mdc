@@ -1,0 +1,42 @@
+# Documentation Standards Rule
+
+## Critical Rules
+
+- All development documentation MUST be placed in the `/development-notes` directory at the project root
+- Documentation file names should use kebab-case and include relevant feature name (e.g., `form-validation-system.md`)
+- All documentation files MUST follow the established template in `/development-notes/template.md`
+- Technical implementation details, design decisions, and development notes should NEVER be placed in `src/` directories
+- User-facing documentation (like README, user guides) should be placed at the project root level
+- API documentation should be generated using appropriate tools and stored in a dedicated `/docs` directory
+- Documentation files must include a date, overview, implementation details, challenges, and solutions
+- Code snippets in documentation should use appropriate language tags (e.g., ```typescript, ```html, ```css)
+- Documentation files should use Markdown format with proper heading hierarchy
+- Documentation must be created/updated as part of the feature implementation process, not after
+
+## Examples
+
+<example>
+// Creating documentation for a new feature
+// GOOD: Place in development-notes directory with template
+
+// In development-notes/authentication-system.md
+# Authentication System Implementation
+
+## Date
+2023-06-20
+
+## Overview
+Implementation of JWT-based authentication system...
+
+[Rest of the template sections]
+</example>
+
+<example type="invalid">
+// BAD: Creating documentation files in src/ directories
+
+// In src/app/features/auth/auth-docs.md
+# Authentication Documentation
+This file explains how the authentication works...
+
+// CORRECT approach: Move to development-notes directory and follow template
+</example> 

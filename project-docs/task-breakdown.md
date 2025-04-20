@@ -23,11 +23,11 @@
     * **Dependencies:** Task 1
     * **Complexity:** Small
 
-3.  **Task:** **Create Core HTTP Service & Error Handling**
-    * **PRD Ref:** General
-    * **Description:** Implement a reusable Angular service (`ApiService` or similar) to handle all HTTP requests to the backend. Include base URL configuration, standard headers (like `Content-Type`), and potentially interceptors for adding auth tokens and handling common HTTP errors (e.g., 401 Unauthorized, 500 Server Error).
-    * **API Endpoint(s):** All (Foundation for API calls)
-    * **Dependencies:** Task 1
+3.  **Task:** **Setup Core HttpClient Configuration & Interceptors**
+    * **PRD Ref:** General, `NFR-*`
+    * **Description:** Configure Angular's `HttpClient` and implement core `HttpInterceptor`s. Create an `AuthTokenInterceptor` to automatically add authorization headers to relevant requests using the `AuthService`. Create an `ErrorHandlerInterceptor` to globally catch HTTP errors, handle common cases like 401 (Unauthorized -> redirect to login) and 5xx (Server Error -> show notification), and potentially standardize error responses. Ensure API base URL is configured appropriately (e.g., via environment variables accessible to services/interceptors). Feature-specific services will inject `HttpClient` directly unless a thin base wrapper service is deemed necessary later for specific, shared pre/post-request logic not covered by interceptors.
+    * **API Endpoint(s):** Applies globally via Interceptors
+    * **Dependencies:** Task 1, Task 4 (AuthService needed for token interceptor)
     * **Complexity:** Medium
 
 4.  **Task:** **Implement Authentication Service**

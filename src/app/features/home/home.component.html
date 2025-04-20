@@ -1,1 +1,23 @@
-<p>home works!</p>
+<div class="p-6">
+  <mat-card class="dark:bg-gray-800">
+    <mat-card-header>
+      <mat-card-title class="dark:text-gray-100">Welcome Home!</mat-card-title>
+      @if (authStore.currentUser(); as user) {
+        <mat-card-subtitle class="dark:text-gray-300"
+          >You are logged in as {{ user.user.email }}</mat-card-subtitle
+        >
+      } @else {
+        <mat-card-subtitle class="dark:text-gray-300"
+          >Loading user data...</mat-card-subtitle
+        >
+      }
+    </mat-card-header>
+    <mat-card-content class="dark:text-gray-200">
+      <p>This is a protected area accessible only to logged-in users.</p>
+      <p>Your authentication status is managed by NgRx SignalStore.</p>
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <button mat-raised-button color="warn" (click)="logout()">Logout</button>
+    </mat-card-actions>
+  </mat-card>
+</div>

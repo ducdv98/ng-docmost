@@ -3,6 +3,7 @@ const eslint = require("@eslint/js");
 const tseslint = require("typescript-eslint");
 const angular = require("angular-eslint");
 const eslintPluginPrettierRecommended = require("eslint-plugin-prettier/recommended");
+const importPlugin = require("eslint-plugin-import");
 
 module.exports = tseslint.config(
   {
@@ -31,6 +32,16 @@ module.exports = tseslint.config(
           style: "kebab-case",
         },
       ],
+      "sort-imports": [
+        "error",
+        {
+          ignoreCase: false,
+          ignoreDeclarationSort: false,
+          ignoreMemberSort: false,
+          memberSyntaxSortOrder: ["none", "all", "multiple", "single"],
+          allowSeparatedGroups: false,
+        },
+      ],
     },
   },
   {
@@ -42,4 +53,5 @@ module.exports = tseslint.config(
     rules: {},
   },
   eslintPluginPrettierRecommended,
+  ...importPlugin?.flatConfigs?.recommended,
 );

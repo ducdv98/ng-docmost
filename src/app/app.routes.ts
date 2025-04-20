@@ -1,33 +1,32 @@
 import { Routes } from '@angular/router';
-import { authGuardGuard } from './core/guards/auth-guard.guard';
-import { anonymousGuardGuard } from './core/guards/anonymous-guard.guard';
-import { localOnlyGuardGuard } from './core/guards/local-only-guard.guard';
+import { authGuard } from './core/guards/auth.guard';
+import { anonymousGuard } from './core/guards/anonymous.guard';
+
 export const routes: Routes = [
   {
     path: '',
-    canActivate: [authGuardGuard],
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./features/home/home.component').then((m) => m.HomeComponent),
   },
   {
     path: 'settings',
-    canActivate: [authGuardGuard],
+    canActivate: [authGuard],
     loadChildren: () =>
       import('./features/settings/settings.routes').then(
         (m) => m.settingsRoutes,
       ),
   },
   {
-    path: 'sign-in',
-    canActivate: [anonymousGuardGuard],
+    path: 'login',
+    canActivate: [anonymousGuard],
     loadComponent: () =>
-      import('./features/auth/sign-in/sign-in.component').then(
-        (m) => m.SignInComponent,
+      import('./features/auth/login/login.component').then(
+        (m) => m.LoginComponent,
       ),
   },
   {
     path: 'setup-workspace',
-    canActivate: [anonymousGuardGuard, localOnlyGuardGuard],
     loadComponent: () =>
       import('./features/auth/setup-workspace/setup-workspace.component').then(
         (m) => m.SetupWorkspaceComponent,
