@@ -17,19 +17,22 @@ import { SetupWorkspaceRequest } from '../models/request/setup-workspace-request
 import { Router } from '@angular/router';
 import { AuthApiService } from '../services/api/auth-api.service';
 import { AuthStore } from './auth.store';
+import {
+  withRequestStatus,
+  setPending,
+  setFulfilled,
+  setError,
+} from '@shared/state/request-status.feature';
 export interface WorkspaceState {
   workspace: Workspace | null;
-  loading: boolean;
-  error: string | null;
 }
 
 export const WorkspaceStore = signalStore(
   { providedIn: 'root' },
   withState<WorkspaceState>({
     workspace: null,
-    loading: false,
-    error: null,
   }),
+  withRequestStatus(),
   withComputed(({ workspace }) => ({
     workspaceAvailable: computed(() => workspace() !== null),
   })),
@@ -51,14 +54,14 @@ export const WorkspaceStore = signalStore(
 
       _loadPublicDataEffect: rxMethod<void>(
         pipe(
-          tap(() => patchState(store, { loading: true })),
+          tap(() => patchState(store, setPending())),
           switchMap(() =>
             workspaceApi.getWorkspacePublicData().pipe(
               tapResponse({
                 next: ({ data }) => patchState(store, { workspace: data }),
                 error: (error: any) =>
-                  patchState(store, { error: error.message }),
-                finalize: () => patchState(store, { loading: false }),
+                  patchState(store, setError(error.message)),
+                finalize: () => patchState(store, setFulfilled()),
               }),
             ),
           ),
@@ -66,7 +69,7 @@ export const WorkspaceStore = signalStore(
       ),
       _setupWorkspaceEffect: rxMethod<SetupWorkspaceRequest>(
         pipe(
-          tap(() => patchState(store, { loading: true })),
+          tap(() => patchState(store, setPending())),
           switchMap((request) =>
             authApi.setupWorkspace(request).pipe(
               tapResponse({
@@ -75,8 +78,8 @@ export const WorkspaceStore = signalStore(
                   authStore.loadCurrentUserEffect();
                 },
                 error: (error: any) =>
-                  patchState(store, { error: error.message }),
-                finalize: () => patchState(store, { loading: false }),
+                  patchState(store, setError(error.message)),
+                finalize: () => patchState(store, setFulfilled()),
               }),
             ),
           ),

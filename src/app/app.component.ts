@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { WorkspaceStore } from './core/state/worskspace.store';
+import { WorkspaceStore } from '@core/state/worskspace.store';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',

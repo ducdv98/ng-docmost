@@ -9,42 +9,42 @@ import {
   withHooks,
 } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { pipe, switchMap, catchError, EMPTY } from 'rxjs';
+import { pipe, switchMap, catchError, EMPTY, tap } from 'rxjs';
 import { Router } from '@angular/router';
 
 import { AuthApiService } from '../services/api/auth-api.service';
 import { CurrentUser } from '../models/user.model';
 import { LoginCredential } from '../models/auth.model';
-
+import {
+  withRequestStatus,
+  setPending,
+  setFulfilled,
+  setError,
+} from '@shared/state/request-status.feature';
 export interface AuthState {
   currentUser: CurrentUser | null;
-  loading: boolean;
-  error: string | null;
   initialized: boolean;
 }
 
 const initialState: AuthState = {
   currentUser: null,
-  loading: false,
-  error: null,
   initialized: false,
 };
 
 export const AuthStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
-  withComputed(({ currentUser, initialized, loading, error }) => ({
+  withRequestStatus(),
+  withComputed(({ currentUser, initialized }) => ({
     authenticated: computed(() => !!currentUser()),
     selectUsername: computed(() => currentUser()?.user?.email ?? 'Guest'),
     selectInitialized: computed(() => initialized()),
-    selectLoading: computed(() => loading()),
-    selectError: computed(() => error()),
   })),
   withMethods(
     (store, authApi = inject(AuthApiService), router = inject(Router)) => ({
       login(credentials: LoginCredential): void {
-        if (store.loading()) return;
-        patchState(store, { loading: true, error: null });
+        if (store.isPending()) return;
+        patchState(store, setPending());
         this.loginEffect(credentials);
       },
 
@@ -59,6 +59,7 @@ export const AuthStore = signalStore(
 
       loginEffect: rxMethod<LoginCredential>(
         pipe(
+          tap(() => patchState(store, setPending())),
           switchMap((credentials) =>
             authApi.login(credentials).pipe(
               tapResponse({
@@ -67,11 +68,7 @@ export const AuthStore = signalStore(
                   // Keep loading state active
                 },
                 error: (err: Error) => {
-                  patchState(store, {
-                    error: err.message || 'Login failed',
-                    loading: false,
-                    currentUser: null,
-                  });
+                  patchState(store, setError(err.message || 'Login failed'));
                 },
               }),
               // After successful login, chain to get user data
@@ -79,26 +76,30 @@ export const AuthStore = signalStore(
                 authApi.getCurrentUser().pipe(
                   tapResponse({
                     next: (user) => {
-                      patchState(store, {
-                        currentUser: user.data,
-                        loading: false,
-                        error: null,
-                        initialized: true,
-                      });
+                      patchState(
+                        store,
+                        {
+                          currentUser: user.data,
+                          initialized: true,
+                        },
+                        setFulfilled(),
+                      );
                       router.navigate(['/']);
                     },
                     error: (err: Error) => {
-                      patchState(store, {
-                        error: 'Failed to load user data after login.',
-                        loading: false,
-                        initialized: true,
-                      });
+                      patchState(
+                        store,
+                        {
+                          initialized: true,
+                        },
+                        setError(err.message),
+                      );
                     },
                   }),
                 ),
               ),
               catchError(() => {
-                patchState(store, { loading: false });
+                patchState(store, setFulfilled());
                 return EMPTY;
               }),
             ),
@@ -108,29 +109,34 @@ export const AuthStore = signalStore(
 
       loadCurrentUserEffect: rxMethod<void>(
         pipe(
+          tap(() => patchState(store, setPending())),
           switchMap(() =>
             authApi.getCurrentUser().pipe(
               tapResponse({
                 next: (user) => {
-                  patchState(store, {
-                    currentUser: user.data,
-                    loading: false,
-                    error: null,
-                    initialized: true,
-                  });
+                  patchState(
+                    store,
+                    {
+                      currentUser: user.data,
+                      initialized: true,
+                    },
+                    setFulfilled(),
+                  );
                   router.navigate(['/']);
                 },
                 error: (err: Error) => {
-                  patchState(store, {
-                    error: store.error() || 'No active session.',
-                    currentUser: null,
-                    loading: false,
-                    initialized: true,
-                  });
+                  patchState(
+                    store,
+                    {
+                      currentUser: null,
+                      initialized: true,
+                    },
+                    setError(err.message),
+                  );
                 },
               }),
               catchError(() => {
-                patchState(store, { loading: false, initialized: true });
+                patchState(store, { initialized: true });
                 return EMPTY;
               }),
             ),
@@ -140,26 +146,34 @@ export const AuthStore = signalStore(
 
       logoutEffect: rxMethod<void>(
         pipe(
+          tap(() => patchState(store, setPending())),
           switchMap(() =>
             authApi.logout().pipe(
               tapResponse({
                 next: () => {
-                  patchState(store, initialState);
+                  patchState(store, initialState, setFulfilled());
                   router.navigate(['/login']);
                 },
                 error: (err: Error) => {
-                  patchState(store, {
-                    currentUser: null,
-                    error: 'Logout failed. Please try again.',
-                    initialized: true,
-                  });
+                  patchState(
+                    store,
+                    {
+                      currentUser: null,
+                      initialized: true,
+                    },
+                    setError(err.message),
+                  );
                 },
               }),
               catchError(() => {
-                patchState(store, {
-                  currentUser: null,
-                  initialized: true,
-                });
+                patchState(
+                  store,
+                  {
+                    currentUser: null,
+                    initialized: true,
+                  },
+                  setError('Logout failed. Please try again.'),
+                );
                 router.navigate(['/login']);
                 return EMPTY;
               }),

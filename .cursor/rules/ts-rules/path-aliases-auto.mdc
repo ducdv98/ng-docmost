@@ -1,0 +1,32 @@
+# TypeScript Import Path Aliases
+
+## Critical Rules
+
+- Always use the `@core/*` path alias when importing from the core directory
+- Always use the `@shared/*` path alias when importing from the shared directory
+- Always use the `@env/*` path alias when importing from the environments directory
+- Prefer importing from barrel files when available (e.g., `@core/index` or simply `@core`)
+- Never suggest relative imports (like `../../core/services/auth.service`) when a path alias is available
+- When suggesting imports, provide the shortest possible path using aliases
+
+## Examples
+
+<example>
+// Good import examples
+import { AuthService } from '@core/services/auth.service';
+import { ButtonComponent } from '@shared/components/button/button.component';
+import { environment } from '@env/environment';
+import { environment } from '@env'; // Using barrel file
+</example>
+
+<example type="invalid">
+// Bad import examples
+import { AuthService } from '../../core/services/auth.service';
+import { ButtonComponent } from '../shared/components/button/button.component';
+import { environment } from './environments/environment';
+</example>
+
+- Always use the `@env/*` path alias when importing from the environments directory
+- Prefer importing from barrel files when available (e.g., `@core/index` or simply `@core`)
+- Never suggest relative imports (like `../../core/services/auth.service`) when a path alias is available
+- When suggesting imports, provide the shortest possible path using aliases

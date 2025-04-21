@@ -1,0 +1,12 @@
+---
+description: 
+globs: src/**/*.ts
+alwaysApply: false
+---
+# Use Path Aliases
+
+## Critical Rules
+
+- Use @core/* for core imports
+- Use @shared/* for shared imports
+- Use @env/* for environment imports
